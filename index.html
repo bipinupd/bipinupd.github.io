@@ -1,1 +1,18 @@
-Hello World
+# Gracefully Stops
+
+The usual way to kill an spark streaming application is `yarn application -kill ${application_id}`. But this command kills the application while it is still in the middle of a batch.
+
+To test different approaches I have a small spark application, that reads content from a kafka topic, count the words in the message and output the word in a new topic with hash of message as topic key.
+
+- First Approach
+
+Adding the shutdown hook looks realistic way to tackle this problem.
+
+```code
+Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				System.out.println("Shutdown Hook is running !");
+				sparkStreamingContext.stop(true, true);
+			}
+		});
+```
